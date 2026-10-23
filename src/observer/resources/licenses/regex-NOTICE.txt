@@ -1,0 +1,20 @@
+regex 2026.9.29
+Declared license expression: Apache-2.0 AND CNRI-Python
+Upstream: https://github.com/mrabarnett/mrab-regex
+
+The dependency is used without modifying its package sources.
+Additions and alterations: Copyright 2020 Matthew Barnett.
+CPython re ancestry: Copyright (c) 1998-2001 by Secret Labs AB.
+Copyright (c) 1995-2000 Corporation for National Research Initiatives;
+All Rights Reserved.
+
+CNRI Python 1.6 section 2 permits this alternative notice:
+
+Python 1.6 is made available subject to the terms and conditions in CNRI's
+License Agreement. This Agreement together with Python 1.6 may be located
+on the Internet using the following unique, persistent identifier (known
+as a handle): 1895.22/1012. This Agreement may also be obtained from a proxy
+server on the Internet using the following URL: http://hdl.handle.net/1895.22/1012.
+
+Agreement: https://www.handle.net/python_licenses/python1.6_9-5-00.html
+The unmodified upstream Apache-2.0 license and attribution are in regex-LICENSE.txt.

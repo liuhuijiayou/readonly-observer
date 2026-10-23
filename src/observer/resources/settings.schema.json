@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Observer instance settings v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "revision",
+    "transport"
+  ],
+  "properties": {
+    "format": {
+      "const": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "transport": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "stdio"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "client",
+            "tunnel_id"
+          ],
+          "properties": {
+            "kind": {
+              "const": "tunnel"
+            },
+            "client": {
+              "type": "string",
+              "pattern": "^/"
+            },
+            "tunnel_id": {
+              "type": "string",
+              "pattern": "^tunnel_(?:[a-z0-9]{4}_)?[a-z0-9]{32}$"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

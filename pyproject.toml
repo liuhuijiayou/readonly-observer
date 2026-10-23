@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "local-readonly-observer"
+version = "0.3.3"
+description = "Explicitly approved read-only project and exact Codex-session MCP"
+readme = "README.md"
+requires-python = ">=3.14"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+authors = [{name = "liuhuijiayou"}]
+maintainers = [{name = "liuhuijiayou"}]
+dependencies = ["mcp==1.30.0", "regex==2026.9.29"]
+classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3.14", "Operating System :: MacOS :: MacOS X"]
+
+[project.scripts]
+observer = "observer.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/liuhuijiayou/readonly-observer"
+Repository = "https://github.com/liuhuijiayou/readonly-observer"
+Issues = "https://github.com/liuhuijiayou/readonly-observer/issues"
+Security = "https://github.com/liuhuijiayou/readonly-observer/security/policy"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["observer"]
+
+[tool.setuptools.package-data]
+observer = ["resources/settings.schema.json", "resources/licenses/mcp-LICENSE", "resources/licenses/regex-LICENSE.txt", "resources/licenses/regex-NOTICE.txt"]
