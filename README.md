@@ -4,6 +4,8 @@
 
 Give an MCP client an evidence-based, read-only view of the local projects and individual Codex sessions you explicitly approve.
 
+**0.1.0 · Alpha / experimental.** Public versioning starts at 0.1.0. Real Codex-session acceptance and support on other platforms remain unverified.
+
 ## Features
 
 - **Understand a codebase.** Browse and search approved source, follow implementations across files, and cite paths, lines and source hashes.
@@ -26,7 +28,7 @@ Approved UTF-8 source can include safe ignored/untracked files. Sensitive paths,
 
 You need **macOS, Python 3.14 with `venv`/`pip`, and a local MCP client that supports stdio**. Git is optional for source reads, required for Git and joint evidence. The recorded test target is macOS 14.7.8 / Apple Silicon / CPython 3.14.3; other Macs and Linux are unverified, and Windows is unsupported. Linux has no bundled Keychain adapter.
 
-Download and extract the source archive from [GitHub Releases](https://github.com/liuhuijiayou/readonly-observer/releases), or clone the [source repository](https://github.com/liuhuijiayou/readonly-observer). There is **no public PyPI installation**. In the source directory containing `pyproject.toml`, run:
+Download and extract the source archive from [v0.1.0 Release](https://github.com/liuhuijiayou/readonly-observer/releases/tag/v0.1.0), or clone the [source repository](https://github.com/liuhuijiayou/readonly-observer). There is **no public PyPI installation**. In the source directory containing `pyproject.toml`, run:
 
 ```sh
 python3.14 -m venv .venv

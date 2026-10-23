@@ -2,9 +2,9 @@
 
 安装起点见 [English README](../README.md) / [中文 README](../README.zh-CN.md)。以下操作只针对自己拥有的安装与实例；源码变更不会自动更新已经安装的程序。
 
-## 同实例升级到 0.3.3
+## 同实例切换程序版本
 
-0.3.0/0.3.1/0.3.2 → 0.3.3 不改变配置 schema。将新版本安装到**新程序目录**，保留旧安装和安装材料，沿用相同的实例 home、授权和凭据身份。不要重新 `init`、登记来源或运行 `credentials set`。
+0.1.0 是公开版本号的起点，使用 format 1 配置。版本号调整不会自动替换已有安装。需要切换程序时，将新版本安装到**新程序目录**，保留旧安装和安装材料；在配置 schema 相同的前提下，沿用相同的实例 home、授权和凭据身份。不要重新 `init`、登记来源或运行 `credentials set`。
 
 以下路径是占位符，替换为实际安装位置：
 
@@ -39,13 +39,13 @@ OBSERVER_INSTANCE="$HOME/Library/Application Support/ReadOnlyObserver"
 "$OLD_OBSERVER" --home "$OBSERVER_INSTANCE" start
 ```
 
-直接 stdio 客户端则停止新进程并改回旧可执行路径。重新核对客户端实际版本和读取结果。本次同 schema 升级不需要恢复授权文件或迁移 Keychain；仅保留旧目录不会启动另一实例。
+直接 stdio 客户端则停止新进程并改回旧可执行路径。重新核对客户端实际版本和读取结果。同 schema 的程序切换不需要恢复授权文件或迁移 Keychain；仅保留旧目录不会启动另一实例。
 
 ## 旧入口与格式迁移
 
 公共入口为 `observer` CLI；`menu` 复用相同实现。`Observer.command` 是可选源码安装薄入口，发现旧原生控制状态时拒绝隐式切换。使用已安装 CLI 显式指定 `--home`；新管理器不能接管旧终端进程。
 
-旧 0.2 格式可迁移到新空实例，逐项明确批准项目和精确 JSONL，或显式导入已审阅配置：
+内部测试阶段的旧配置格式可迁移到新空实例，逐项明确批准项目和精确 JSONL，或显式导入已审阅配置：
 
 ```sh
 observer config import /absolute/path/to/reviewed-legacy-config.json

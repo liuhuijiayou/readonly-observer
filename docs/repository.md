@@ -22,8 +22,8 @@ Tests create isolated synthetic repositories and sessions under `.local/`; they 
 .venv/bin/python -m pip install 'build==1.2.2.post1' 'setuptools==80.9.0'
 .venv/bin/python -I -B -m build --no-isolation
 .venv/bin/python -I -B scripts/check_release.py \
-  dist/local_readonly_observer-0.3.3-py3-none-any.whl \
-  dist/local_readonly_observer-0.3.3.tar.gz
+  dist/local_readonly_observer-0.1.0-py3-none-any.whl \
+  dist/local_readonly_observer-0.1.0.tar.gz
 ```
 
 These names correspond to the current `pyproject.toml` version. For clean-package verification, extract the source archive into a new directory and repeat the tests in a fresh environment. Verify an installed wheel through MCP independently of development source paths. Keep implementation, synthetic tests, installed-package checks, deployed versions and remote checks as separate claims.
@@ -106,8 +106,8 @@ Use a fresh destination with an existing parent. Review the report before contin
 Change to the new export, create a fresh Python 3.14 environment, and run the setup/test/build commands above. The export should run the same synthetic suite. Preserve verification summaries and artifact hashes privately; only publish a sanitized summary, not raw local evidence.
 
 ```sh
-shasum -a 256 dist/local_readonly_observer-0.3.3-py3-none-any.whl \
-  dist/local_readonly_observer-0.3.3.tar.gz
+shasum -a 256 dist/local_readonly_observer-0.1.0-py3-none-any.whl \
+  dist/local_readonly_observer-0.1.0.tar.gz
 ```
 
 Run `scripts/check_release.py` on those exact archives before recording their hashes. Validate installation in another fresh environment and exercise the installed MCP service against synthetic approved fixtures, not personal sessions. A static repository check does not replace the supported Python 3.14 runtime suite. No CI workflow is currently supplied; local results must not be labeled CI.

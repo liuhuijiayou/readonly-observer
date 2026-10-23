@@ -4,6 +4,8 @@
 
 让 MCP 客户端依据证据，只读访问你在本机明确批准的项目和单个 Codex 会话。
 
+**0.1.0 · Alpha / 实验阶段。** 公开版本从 0.1.0 开始；真实 Codex 会话验收及其他平台支持仍未验证。
+
 ## 功能
 
 - **理解代码库。** 浏览、搜索已批准的源码，跨文件追踪实现，并引用路径、行号和源码哈希。
@@ -26,7 +28,7 @@
 
 需要 **macOS、带 `venv`/`pip` 的 Python 3.14，以及支持 stdio 的本地 MCP 客户端**。普通源码读取不需要 Git，Git 与联合证据功能需要。已有测试目标为 macOS 14.7.8 / Apple Silicon / CPython 3.14.3；其他 Mac 和 Linux 未验证，Windows 不支持。没有随包提供 Linux Keychain 替代方案。
 
-从 [GitHub Releases](https://github.com/liuhuijiayou/readonly-observer/releases) 下载并解压源码包，或克隆[源码仓库](https://github.com/liuhuijiayou/readonly-observer)。目前**没有公开的 PyPI 安装方式**。在包含 `pyproject.toml` 的源码目录执行：
+从 [v0.1.0 Release](https://github.com/liuhuijiayou/readonly-observer/releases/tag/v0.1.0) 下载并解压源码包，或克隆[源码仓库](https://github.com/liuhuijiayou/readonly-observer)。目前**没有公开的 PyPI 安装方式**。在包含 `pyproject.toml` 的源码目录执行：
 
 ```sh
 python3.14 -m venv .venv

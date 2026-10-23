@@ -358,7 +358,7 @@ class ManagedRuntimeTests(unittest.TestCase):
 
     def test_local_probe_without_daemon_is_ephemeral_and_remote_unknown(self):
         result = asyncio.run(probe(self.store, managed=False))
-        self.assertEqual(result["version"], "0.3.3")
+        self.assertEqual(result["version"], "0.1.0")
         self.assertEqual(runtime.status(self.store)["manager"], "not_running")
 
     def test_tunnel_adapter_uses_only_mocked_instance_key_and_clears_environment(self):

@@ -39,7 +39,7 @@ class BoundedInput:
 
 
 async def serve(observer):
-    server = Server("local-readonly-observer", version="0.3.3")
+    server = Server("local-readonly-observer", version="0.1.0")
 
     @server.list_tools()
     async def list_tools():

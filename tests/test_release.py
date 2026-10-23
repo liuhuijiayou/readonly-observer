@@ -22,7 +22,7 @@ class ReleaseBoundaryTests(unittest.TestCase):
             with tarfile.open(path, 'w:gz') as out:
                 for name, data in entries.items():
                     raw = data.encode()
-                    item = tarfile.TarInfo('local_readonly_observer-0.3.3/' + name)
+                    item = tarfile.TarInfo('local_readonly_observer-0.1.0/' + name)
                     item.size = len(raw)
                     out.addfile(item, io.BytesIO(raw))
             return path
@@ -38,7 +38,7 @@ class ReleaseBoundaryTests(unittest.TestCase):
                 DIST_INFO + '/METADATA': self.metadata()}
 
     def metadata(self):
-        return ('Metadata-Version: 2.4\nName: local-readonly-observer\nVersion: 0.3.3\n'
+        return ('Metadata-Version: 2.4\nName: local-readonly-observer\nVersion: 0.1.0\n'
                 'License-Expression: MIT\nLicense-File: LICENSE\nLicense-File: THIRD_PARTY_NOTICES.md\n\n')
 
     def test_root_license_and_metadata_are_required_in_both_archive_kinds(self):
