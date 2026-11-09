@@ -12,7 +12,7 @@ from .security import Budget, MAX_SCAN, Refusal, digest
 DIR_FLAGS = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
 FILE_FLAGS = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC
 DENIED = frozenset({
-    ".git", ".codex", ".local", ".venv", ".ssh", ".aws", ".azure", ".config", ".cache",
+    ".git", ".codex", ".venv", ".ssh", ".aws", ".azure", ".config", ".cache",
     "__pycache__", "node_modules", "auth", "auth.json", "authentication.json",
     "credentials", "credentials.json", "credentials.yml", "credentials.yaml",
     "tokens", "tokens.json", "token.json", "secrets", "secrets.json", "secrets.yaml", "secrets.toml",
