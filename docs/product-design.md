@@ -1,5 +1,7 @@
 # ReadOnly Observer 产品与技术设计
 
+Linux 与多节点新增能力见[部署与生命周期](deployment.zh-CN.md)。本文原有 Mac 操作继续保留；本轮不要求现有稳定 Mac 重新初始化或迁移。实际验证范围见[工作审计](implementation-audit.md)。
+
 本文描述当前实现，不是未来功能承诺。首次使用见 [README](../README.zh-CN.md)，接口细节见[配置参考](config-reference.md)，威胁边界见 [SECURITY.md](../SECURITY.md)。
 
 ## 1. 用户问题与产品目标
@@ -13,7 +15,7 @@
 3. 将本机配置管理与远端 MCP 读取分离；客户端或来源中的文本不能增加授权。
 4. 分离安装、本地协议、传输进程和远端使用证据，避免把“进程启动”当成“ChatGPT 已连接”。
 
-非目标：运行项目/测试、编辑文件、控制 Codex、发现全部历史、读取隐藏推理、恢复未持久会话、提供实时任务正确性判断、逐远端用户 OAuth/多租户隔离、任意 Git 布局支持、自动更新或开机自启。Windows 不支持，Linux 未完整验证且无当前 Keychain 替代；已记录的平台目标见 README。
+非目标：运行项目/测试、编辑文件、控制 Codex、发现全部历史、读取隐藏推理、恢复未持久会话、提供实时任务正确性判断、逐远端用户 OAuth/多租户隔离、任意 Git 布局支持、自动更新。Linux 可由操作者显式安装 systemd 自启 unit。Windows 不支持，Linux 使用独立 systemd Credentials 适配，实际验证限制见部署审计；已记录的平台目标见 README。
 
 ## 2. 信任边界
 

@@ -52,6 +52,23 @@ def parser():
     credentials = commands.add_parser("credentials", help="Opt-in instance-specific macOS Keychain settings")
     credentials.add_argument("action", choices=("info", "set"))
     credentials.add_argument("--approve", action="store_true")
+    credentials.add_argument("--kind", choices=("runtime", "proxy"), default="runtime", help="Linux credential slot")
+    linux_credentials = commands.add_parser("credential-delete", help="Linux: remove a local staged credential; no remote revocation")
+    linux_credentials.add_argument("--kind", choices=("runtime", "proxy"), default="runtime")
+    linux_credentials.add_argument("--approve", action="store_true")
+    node = commands.add_parser("node", help="Optional public identity; no source or credential migration")
+    node.add_argument("action", choices=("info", "set", "retire", "activate"))
+    node.add_argument("--name")
+    node.add_argument("--id", dest="node_id")
+    node.add_argument("--approve", action="store_true")
+    proxy = commands.add_parser("proxy", help="Linux: use the separate secure proxy credential")
+    proxy.add_argument("action", choices=("enable", "disable"))
+    for name in ("recover", "revoke"):
+        group = commands.add_parser(name, help="Linux: explicit local recovery or removal of all source grants")
+        group.add_argument("--approve", action="store_true")
+    commands.add_parser("run", help="Linux: foreground manager for systemd")
+    commands.add_parser("systemd-unit", help="Linux: render instance unit to stdout; never install or start")
+    commands.add_parser("_stage-credentials", help=argparse.SUPPRESS)
     descriptions = {"serve": "Serve read-only MCP directly over stdio", "connect": "Connect stdio to this instance's local manager",
                     "start": "Start this instance; remote readiness remains unverified", "stop": "Stop only this instance's owned processes",
                     "status": "Show local process state and pending configuration", "menu": "Interactive menu using these same commands",
@@ -59,7 +76,10 @@ def parser():
     for name, description in descriptions.items():
         commands.add_parser(name, help=description)
     for name in ("_manager", "_serve-active"):
-        commands.add_parser(name)
+        internal = commands.add_parser(name)
+        internal.add_argument("--parent-fd", type=int, default=None, help=argparse.SUPPRESS)
+    internal = commands.add_parser("_tunnel")
+    internal.add_argument("--parent-fd", type=int, required=True, help=argparse.SUPPRESS)
     doctor = commands.add_parser("doctor", help="Separate installation/configuration/local/transport/metadata/end-to-end evidence")
     doctor.add_argument("--level", choices=("all", "installation", "config", "local", "transport", "metadata", "end-to-end"), default="all")
     doctor.add_argument("--probe", action="store_true", help="Run a temporary local MCP initialize/tools-list/info probe; no observed project code executes")
@@ -97,6 +117,8 @@ async def probe(store, managed=False):
 
 def diagnose(store, args):
     from . import runtime
+    if sys.platform.startswith("linux"):
+        from . import linux_runtime as runtime
     layers = {"installation": {"status": "available", "version": __version__, "python": sys.version.split()[0],
                                "platform": sys.platform, "tested_scope": "see_release_evidence; platform_presence_is_not_validation"},
               "config": {"status": "not_checked"}, "local": {"status": "not_observed"},
@@ -147,6 +169,9 @@ def diagnose(store, args):
 def run(args):
     from .profile import Store
     from . import runtime
+    if sys.platform.startswith("linux"):
+        from .linux import LinuxStore as Store
+        from . import linux_runtime as runtime
     store = Store(args.home)
     command = args.command
     if command == "menu":
@@ -201,6 +226,51 @@ def run(args):
     if command == "config" and args.action == "upgrade":
         return {"ok": True, **store.upgrade()}
     store.require()
+    if command == "node":
+        from . import nodes
+        if args.action == "info":
+            return {"ok": True, "node": nodes.identity(store), "credential_accessed": False}
+        if args.action == "set":
+            if not args.name and not args.node_id:
+                raise Refusal("node_set_requires_name_or_id")
+            if confirmation(args)({"action": "set_public_node_identity", "name": args.name, "id": args.node_id}) is not True:
+                raise Refusal("local_approval_required")
+            return {"ok": True, **nodes.configure(store, args.name, args.node_id)}
+        if not sys.platform.startswith("linux"):
+            raise Refusal("linux_lifecycle_command; existing_macos_lifecycle_unchanged")
+        if confirmation(args)({"action": args.action, "local_only": True, "remote_permissions": "unchanged"}) is not True:
+            raise Refusal("local_approval_required")
+        runtime.stop(store)
+        if args.action == "retire":
+            return {"ok": True, **store.revoke_all(retire=True)}
+        return {"ok": True, **nodes.configure(store, status="active")}
+    if command in {"run", "recover", "revoke", "systemd-unit", "proxy", "credential-delete", "_tunnel", "_stage-credentials"}:
+        if not sys.platform.startswith("linux"):
+            raise Refusal("linux_only_command; macos_unchanged")
+        if command == "run":
+            return runtime.manage(store)
+        if command == "_tunnel":
+            return runtime.supervise_tunnel(store, args.parent_fd)
+        if command == "systemd-unit":
+            from .linux_systemd import render
+            print(render(store), end="")
+            return None
+        if command == "_stage-credentials":
+            from .linux_legacy import prepare
+            return {"ok": True, **prepare(store)}
+        if command == "proxy":
+            return {"ok": True, **store.set_proxy(args.action == "enable")}
+        if confirmation(args)({"action": command, "local_only": True, "remote_permissions": "unchanged"}) is not True:
+            raise Refusal("local_approval_required")
+        if command == "recover":
+            return {"ok": True, **runtime.recover(store)}
+        if command == "revoke":
+            runtime.stop(store)
+            return {"ok": True, **store.revoke_all()}
+        from .linux_credentials import delete_staged
+        delete_staged(store, args.kind)
+        return {"ok": True, "staged_credential_removed": True, "runtime_key": "not_revoked",
+                "loaded_unit_credentials": "unchanged_until_unit_stops", "platform_permissions": "unchanged"}
     if command in {"project", "session"}:
         kind = "workspace" if command == "project" else "session"
         if args.action == "list":
@@ -243,6 +313,11 @@ def run(args):
             value = {"kind": "tunnel", "client": str(Path(args.client).expanduser().absolute()), "tunnel_id": args.tunnel_id}
         return {"ok": True, **store.set_transport(value)}
     if command == "credentials":
+        if sys.platform.startswith("linux"):
+            from .linux_commands import credentials
+            return credentials(store, args, confirmation(args))
+        if args.kind != "runtime":
+            raise Refusal("linux_only_credential_kind; macos_keychain_unchanged")
         keychain = store.keychain()
         meta = {"service": keychain.service.decode(), "account": keychain.account.decode(),
                 "value_read": False, "old_legacy_item": "not_read_or_migrated"}
@@ -265,7 +340,12 @@ def run(args):
     if command in {"serve", "_serve-active"}:
         from .server import serve
         from .service import Observer
+        if sys.platform.startswith("linux") and getattr(args, "parent_fd", None) is not None:
+            runtime.watch_parent(args.parent_fd)
         config = store.configuration(active=command == "_serve-active")
+        if sys.platform == "darwin":
+            from .nodes import identity
+            config.node = identity(store)
         try:
             asyncio.run(serve(Observer(config)))
         finally:

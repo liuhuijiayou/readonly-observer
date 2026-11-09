@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import fnmatch
 import os
+import sys
 
 from .fs import Root, components, public_workspace_text, signature, source_lines
 from .security import Budget, Matcher, Refusal, binding, clip, item_size, text_window
@@ -149,6 +150,9 @@ class WorkspaceReader:
                     result.append((alias, path, version))
                 if before != signature(os.fstat(scoped.fd)):
                     raise Refusal("source_changed")
+                if sys.platform.startswith("linux"):
+                    from .linux_fs import revalidate_selection
+                    revalidate_selection(root, selection, before)
                 scopes.append((alias, kind, selection, before))
             finally:
                 scoped.close()

@@ -1,10 +1,10 @@
 # ReadOnly Observer
 
-[简体中文](README.zh-CN.md)
+[简体中文](README.zh-CN.md) · [Linux / multi-node deployment](docs/deployment.md) · [systemd 219](docs/systemd219.en.md)
 
 Give an MCP client an evidence-based, read-only view of the local projects and individual Codex sessions you explicitly approve.
 
-**0.1.0 · Alpha / experimental.** Public versioning starts at 0.1.0. Real Codex-session acceptance and support on other platforms remain unverified.
+**0.1.0 · Alpha / experimental.** Public versioning starts at 0.1.0. Linux adapters are developed on the `linux-platform-adapter` branch; current test evidence and remaining platform/remote acceptance are recorded in the [implementation audit](docs/implementation-audit.md). No new release has been published.
 
 ## Features
 
@@ -26,7 +26,7 @@ Approved UTF-8 source can include safe ignored/untracked files. Sensitive paths,
 
 ### 1. Install from source
 
-You need **macOS, Python 3.14 with `venv`/`pip`, and a local MCP client that supports stdio**. Git is optional for source reads, required for Git and joint evidence. The recorded test target is macOS 14.7.8 / Apple Silicon / CPython 3.14.3; other Macs and Linux are unverified, and Windows is unsupported. Linux has no bundled Keychain adapter.
+You need **macOS or Linux, Python 3.14+ with `venv`/`pip`, and a local MCP client that supports stdio**. Git 2.28+ is required for Git and joint evidence, optional for ordinary reads. Linux Tunnel deployment supports systemd 219+ (checked tmpfs staging before 247, native LoadCredential from 247); see the [complete deployment guide](docs/deployment.md). Existing macOS Keychain, v1 configuration and lifecycle behavior are retained; no action is required on an existing stable Mac. Windows is unsupported. Native Mac verification and actual remote acceptance for this branch remain pending; see the audit.
 
 Download and extract the source archive from [v0.1.0 Release](https://github.com/liuhuijiayou/readonly-observer/releases/tag/v0.1.0), or clone the [source repository](https://github.com/liuhuijiayou/readonly-observer). There is **no public PyPI installation**. In the source directory containing `pyproject.toml`, run:
 

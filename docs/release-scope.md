@@ -1,6 +1,6 @@
 # Public release scope and readiness
 
-ReadOnly Observer is maintained by `liuhuijiayou` under the [MIT License](../LICENSE), with the public repository at [liuhuijiayou/readonly-observer](https://github.com/liuhuijiayou/readonly-observer). The reviewed source inventory has **59 files** in [PUBLIC_FILES.txt](../PUBLIC_FILES.txt). This checklist defines what release maintainers must verify for each distribution; a bounded scan does not establish ownership or guarantee absence of secrets.
+ReadOnly Observer is maintained by `liuhuijiayou` under the [MIT License](../LICENSE), with the public repository at [liuhuijiayou/readonly-observer](https://github.com/liuhuijiayou/readonly-observer). The reviewed source inventory has **80 files** in [PUBLIC_FILES.txt](../PUBLIC_FILES.txt). This checklist defines what release maintainers must verify for each distribution; a bounded scan does not establish ownership or guarantee absence of secrets.
 
 ## 1. Release gates
 
@@ -12,28 +12,29 @@ ReadOnly Observer is maintained by `liuhuijiayou` under the [MIT License](../LIC
 | Honest verification | Record actual commands, environment, result and artifact hashes; separate local tests from remote operation | Platform restrictions and local/remote distinction are documented; do not turn a synthetic test into real-session acceptance |
 | Publication plan | Confirm repository, release tag/assets and security/contribution channels | Use the project repository, Issues/PRs and the private reporting channel in SECURITY.md |
 
-The Open Source Definition concerns license freedoms, not a compulsory collection of GitHub files. CONTRIBUTING, SECURITY and CODE_OF_CONDUCT are useful community practices, not by themselves an OSI qualification. Private reporting is documented in SECURITY.md; contribution guidance lives in docs/repository.md. No CI workflow or code of conduct is present. Adding them is a separate reviewed change, not a claim that they already exist.
+The Open Source Definition concerns license freedoms, not a compulsory collection of GitHub files. CONTRIBUTING, SECURITY and CODE_OF_CONDUCT are useful community practices, not by themselves an OSI qualification. Private reporting is documented in SECURITY.md; contribution guidance lives in docs/repository.md. A Linux/macOS synthetic CI workflow is supplied; hosted execution is pending. No code of conduct is present.
 
 ## 2. What belongs in the source repository
 
-For this project's reviewed source distribution, include **all current inventory entries**, not a hand-selected subset. The following groups account for all 59 files; the inventory is authoritative for exact filenames.
+For this project's reviewed source distribution, include **all current inventory entries**, not a hand-selected subset. The following groups account for all 80 files; the inventory is authoritative for exact filenames.
 
 | Current paths | Count | Purpose |
 | --- | ---: | --- |
 | `.gitignore`, `MANIFEST.in`, `PUBLIC_FILES.txt` | 3 | Reviewed-source and packaging boundary |
 | `LICENSE`, `README.md`, `README.zh-CN.md`, `SECURITY.md`, `THIRD_PARTY_NOTICES.md` | 5 | Project license, entry points, security scope and dependency notices |
 | `pyproject.toml`, `requirements.lock`, `requirements-macos-py314.lock`, `dependencies-tested.json` | 4 | Build metadata and dependency/tested-environment records |
+| `.github/workflows/ci.yml` | 1 | Synthetic macOS/Linux CI and Linux systemd smoke |
 | `Observer.command` | 1 | Optional CLI menu launcher, currently included in the source contract |
-| `docs/config-reference.md`, `docs/migration.md`, `docs/product-design.md`, `docs/product-manual.md`, `docs/release-scope.md`, `docs/repository.md`, `docs/troubleshooting.md` | 7 | Operation, design, maintenance and publication documentation |
+| The 13 `.md` files listed under `docs/` | 13 | Operation, design, maintenance and publication documentation |
 | `examples/instance-settings.json` | 1 | Empty stdio settings without real grants or secrets |
-| `scripts/build_fixtures.py`, `scripts/check_release.py`, `scripts/check_repository.py`, `scripts/l1_probe.py` | 4 | Synthetic fixture, protocol and packaging verification helpers |
-| The 16 `.py` files listed under `src/observer/` | 16 | Runtime implementation; exact names are in the inventory |
+| `scripts/build_fixtures.py`, `scripts/check_release.py`, `scripts/check_repository.py`, `scripts/l1_probe.py`, `scripts/test_suite.py`, `scripts/systemd_smoke.py` | 6 | Synthetic fixture, protocol and packaging verification helpers |
+| The 25 `.py` files listed under `src/observer/` | 25 | Runtime implementation; exact names are in the inventory |
 | `src/observer/resources/settings.schema.json` and the 3 files under `src/observer/resources/licenses/` | 4 | Public schema and preserved dependency notices |
-| The 14 `.py` files listed under `tests/` | 14 | Synthetic regression tests and support code |
+| The 17 `.py` files listed under `tests/` | 17 | Synthetic regression tests and support code |
 
 The root `LICENSE` and `THIRD_PARTY_NOTICES.md` are included in package license metadata and both distribution archives. Preserve the three dependency license/NOTICE resources as well. When adding or renaming public files, update `PUBLIC_FILES.txt`, `.gitignore`, `MANIFEST.in` and the applicable filename allowlists in `scripts/check_release.py` together. Any license changes also require matching `pyproject.toml` metadata and freshly verified artifacts; inventory changes alone are insufficient.
 
-Optional future repository additions, not required by OSI as filenames: a dedicated CONTRIBUTING.md, CODE_OF_CONDUCT.md, CHANGELOG.md, issue templates, a supported-platform CI workflow and architecture illustrations. Add only when there is an owner and a usable process behind them. Do not fabricate a tracker, mailbox, build badge or CI result.
+Optional future repository additions, not required by OSI as filenames: a dedicated CONTRIBUTING.md, CODE_OF_CONDUCT.md, CHANGELOG.md, issue templates, additional CI targets and architecture illustrations. Add only when there is an owner and a usable process behind them. Do not fabricate a tracker, mailbox, build badge or CI result.
 
 ## 3. What must stay out
 

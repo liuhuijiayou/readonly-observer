@@ -1,5 +1,7 @@
 # 升级、回退与卸载
 
+Linux 与多节点新增能力见[部署与生命周期](deployment.zh-CN.md)。本文原有 Mac 操作继续保留；本轮不要求现有稳定 Mac 重新初始化或迁移。实际验证范围见[工作审计](implementation-audit.md)。
+
 安装起点见 [English README](../README.md) / [中文 README](../README.zh-CN.md)。以下操作只针对自己拥有的安装与实例；源码变更不会自动更新已经安装的程序。
 
 ## 同实例切换程序版本

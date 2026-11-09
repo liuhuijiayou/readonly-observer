@@ -1,5 +1,7 @@
 # ReadOnly Observer CLI 与配置参考
 
+Linux 与多节点新增能力见[部署与生命周期](deployment.zh-CN.md)。本文原有 Mac 操作继续保留；本轮不要求现有稳定 Mac 重新初始化或迁移。实际验证范围见[工作审计](implementation-audit.md)。
+
 命令形式：`observer [--home PATH] COMMAND ...`；`OBSERVER_HOME` 是唯一可选的实例选择环境变量。指定 `--home` 优先。全局 `--version` / `--help` 不要求初始化。
 
 | 命令 | 参数与效果 |

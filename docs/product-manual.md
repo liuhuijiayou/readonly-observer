@@ -1,5 +1,7 @@
 # ReadOnly Observer 用户手册
 
+Linux 与多节点新增能力见[部署与生命周期](deployment.zh-CN.md)。本文原有 Mac 操作继续保留；本轮不要求现有稳定 Mac 重新初始化或迁移。实际验证范围见[工作审计](implementation-audit.md)。
+
 首次安装、项目批准和本地 MCP 连接见 [English README](../README.md) / [中文 README](../README.zh-CN.md)。本页说明日常管理、精确会话读取、远端传输和证据解释；命令与工具字段见[配置参考](config-reference.md)。
 
 示例中的 `observer` 指已安装的可执行文件；未加入 PATH 时使用其绝对路径。所有操作和客户端须使用同一个实例；自定义 `--home PATH` 放在子命令前。
@@ -102,7 +104,7 @@ observer doctor --level transport
 
 `credentials set` 展示保存/替换目标，要求本机明确确认，并在可信终端隐藏输入具有所需 Read+Use 权限的已有运行密钥。即使用 `--approve` 也需要安全 TTY。**密钥不得放入聊天、命令参数、配置或环境输入**；不提供通过参数/stdin/环境传 key 的接口。
 
-Keychain service 按实例绝对路径哈希派生，account 为 `runtime`；移动 home 会改变条目标识。只使用当前实例条目，不回退读取旧条目。此功能仅有 macOS 适配。显式 tunnel `start` 才读取已有条目，注入自己创建的客户端环境；MCP 工作者通过 `env -i` 清除该环境。原始客户端日志不保留。
+Keychain service 按实例绝对路径哈希派生，account 为 `runtime`；移动 home 会改变条目标识。只使用当前实例条目，不回退读取旧条目。本段描述的 Keychain 功能仅适用于 macOS；Linux 使用独立 systemd Credentials 适配。显式 tunnel `start` 才读取已有条目，注入自己创建的客户端环境；MCP 工作者通过 `env -i` 清除该环境。原始客户端日志不保留。
 
 不要同时启动两个使用相同 tunnel 的客户端。旧终端服务需回到原控制窗口停止；新管理器不会接管它。锁不可达或停止结果不确定时先排查，不删除锁或盲目重启。
 

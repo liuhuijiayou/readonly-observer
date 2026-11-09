@@ -133,7 +133,7 @@ def build(base=PROJECT / ".local/fixtures", reset=False):
     write(workspace / "public-secret.txt", "safe\npassword=" + SECRET + "\n-----BEGIN PRIVATE KEY-----\n" + SECRET + "\n-----END PRIVATE KEY-----\nsafe end\n")
     write(workspace / ".env", "password=" + SECRET + "\n")
     write(workspace / "auth.json", json.dumps({"access_token": SECRET}))
-    write(workspace / ".local/private.log", PRIVATE)
+    write(workspace / ".local/credentials/private.log", PRIVATE)
     write(base / "untouched/state.sqlite", "synthetic database placeholder\n")
     write(base / "untouched/state.sqlite-wal", "synthetic WAL placeholder\n")
     init_repo(base / "repo", True)

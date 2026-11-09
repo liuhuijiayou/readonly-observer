@@ -19,7 +19,7 @@ class FilesystemTests(ObserverCase):
         self.denied("workspace_read", alias="other", path="safe.txt")
 
     def test_sensitive_policy_and_normal_public_names(self):
-        for path in (".env", ".env.production", "auth.json", ".local/private.log", ".venv/lib/x", ".git/HEAD", ".ssh/config", "key.pem", "credentials.json",
+        for path in (".env", ".env.production", "auth.json", ".local/credentials/private.log", ".venv/lib/x", ".git/HEAD", ".ssh/config", "key.pem", "credentials.json",
                      ".git-credentials", "secrets.toml", "credentials.toml"):
             self.assertEqual(self.denied("workspace_read", alias="fixture", path=path)["error"], "sensitive_path")
         result = self.good("workspace_read", alias="fixture", path="tokenization.py")

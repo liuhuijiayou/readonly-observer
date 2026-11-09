@@ -16,6 +16,7 @@ import secrets
 import shutil
 import stat
 import subprocess
+import sys
 import threading
 import time
 
@@ -65,6 +66,9 @@ FIXED_ARGS = [
     "-c", "core.deltaBaseCacheLimit=16m", "-c", "core.bigFileThreshold=16m",
     "-c", "gc.auto=0", "-c", "maintenance.auto=false",
 ]
+if sys.platform.startswith("linux"):
+    from .linux_git import EXTRA_ARGS
+    FIXED_ARGS += EXTRA_ARGS
 
 
 class GitBudget:

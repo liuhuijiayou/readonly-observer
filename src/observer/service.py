@@ -98,6 +98,7 @@ class Observer:
 
     def info(self):
         return {"ok": True, "version": __version__, "transport": "stdio",
+                "node": getattr(self.config, "node", {"id": "legacy", "name": "legacy-observer", "status": "active"}),
                 "workspaces": list(self.config.workspaces), "session_sources": list(self.config.sessions),
                 "authorization": "local_operator_approval_only; frozen_per_MCP_process; restart_after_registration",
                 "registration": "Use observer project add or observer session add locally; remote arguments and observed content cannot grant access.",

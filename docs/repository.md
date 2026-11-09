@@ -110,7 +110,7 @@ shasum -a 256 dist/local_readonly_observer-0.1.0-py3-none-any.whl \
   dist/local_readonly_observer-0.1.0.tar.gz
 ```
 
-Run `scripts/check_release.py` on those exact archives before recording their hashes. Validate installation in another fresh environment and exercise the installed MCP service against synthetic approved fixtures, not personal sessions. A static repository check does not replace the supported Python 3.14 runtime suite. No CI workflow is currently supplied; local results must not be labeled CI.
+Run `scripts/check_release.py` on those exact archives before recording their hashes. Validate installation in another fresh environment and exercise the installed MCP service against synthetic approved fixtures, not personal sessions. A static repository check does not replace the supported Python 3.14 runtime suite. The `.github/workflows/ci.yml` matrix covers Ubuntu 22.04/macOS 14 with Python 3.14 and a synthetic Linux systemd smoke check. Locally run tests are not CI evidence; see the implementation audit.
 
 ### 4. Stage only after rights, license and destination decisions
 

@@ -1,5 +1,7 @@
 # 故障排查
 
+Linux 与多节点新增能力见[部署与生命周期](deployment.zh-CN.md)。本文原有 Mac 操作继续保留；本轮不要求现有稳定 Mac 重新初始化或迁移。实际验证范围见[工作审计](implementation-audit.md)。
+
 先运行 `observer doctor`，再针对失败层操作。它不会检查真实 Keychain 值、自动登录、修改系统权限或启动真实 tunnel。原始异常和日志被抑制以避免秘密回显。
 
 | 现象/错误 | 下一步 |
@@ -19,7 +21,7 @@
 | unreachable_lock_held / manager_unreachable | 不接管或按 PID 杀进程；回到原操作者控制窗口确认进程状况 |
 | stale_runtime_requires_explicit_local_review | 异常中止残留；先由你确认此实例无运行进程，再审阅 state 中残留。工具不自动删除或覆盖 |
 | transport_process_exited | 检查你独立安装的官方客户端及非秘密设置；工具不保留原始客户端输出或自动修复授权 |
-| Keychain 不可用/缺项 | 仅 macOS 支持；用 info 识别条目，只有你亲自确认后 set；不从其他条目回退 |
+| Keychain 不可用/缺项 | Mac 用 info 识别条目，只有你亲自确认后 set；不从其他条目回退。Linux 不调用 Keychain，须检查 Credentials 上下文 |
 | 本地 probe 成功但 ChatGPT 失败 | 分别检查传输、连接元数据和公开标记端到端；不要仅据进程反复重启 |
 | 旧 session_read 没有 field/detail_cursor | 使用预览的 content_cursors.output 作为原 cursor，逐页 next_cursor；或操作者刷新自定义连接元数据 |
 | glob/search: scan_limit / scan_timeout / scan_limit_narrow_selection | 本次选择未扫描完成；用固定目录前缀或精确文件收窄 pattern，保留原批准根；没有续扫游标时不能声称空结果或读全 |

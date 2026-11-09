@@ -13,7 +13,7 @@ license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
 authors = [{name = "liuhuijiayou"}]
 maintainers = [{name = "liuhuijiayou"}]
 dependencies = ["mcp==1.30.0", "regex==2026.9.29"]
-classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3.14", "Operating System :: MacOS :: MacOS X"]
+classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3.14", "Operating System :: MacOS :: MacOS X", "Operating System :: POSIX :: Linux"]
 
 [project.scripts]
 observer = "observer.cli:main"
