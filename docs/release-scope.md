@@ -1,6 +1,6 @@
 # Public release scope and readiness
 
-ReadOnly Observer is maintained by `liuhuijiayou` under the [MIT License](../LICENSE), with the public repository at [liuhuijiayou/readonly-observer](https://github.com/liuhuijiayou/readonly-observer). The reviewed source inventory has **80 files** in [PUBLIC_FILES.txt](../PUBLIC_FILES.txt). This checklist defines what release maintainers must verify for each distribution; a bounded scan does not establish ownership or guarantee absence of secrets.
+ReadOnly Observer is maintained by `liuhuijiayou` under the [MIT License](../LICENSE), with the public repository at [liuhuijiayou/readonly-observer](https://github.com/liuhuijiayou/readonly-observer). The reviewed source inventory has **87 files** in [PUBLIC_FILES.txt](../PUBLIC_FILES.txt). This checklist defines what release maintainers must verify for each distribution; a bounded scan does not establish ownership or guarantee absence of secrets.
 
 ## 1. Release gates
 
@@ -16,7 +16,7 @@ The Open Source Definition concerns license freedoms, not a compulsory collectio
 
 ## 2. What belongs in the source repository
 
-For this project's reviewed source distribution, include **all current inventory entries**, not a hand-selected subset. The following groups account for all 80 files; the inventory is authoritative for exact filenames.
+For this project's reviewed source distribution, include **all current inventory entries**, not a hand-selected subset. The following groups account for all 87 files; the inventory is authoritative for exact filenames.
 
 | Current paths | Count | Purpose |
 | --- | ---: | --- |
@@ -25,12 +25,12 @@ For this project's reviewed source distribution, include **all current inventory
 | `pyproject.toml`, `requirements.lock`, `requirements-macos-py314.lock`, `dependencies-tested.json` | 4 | Build metadata and dependency/tested-environment records |
 | `.github/workflows/ci.yml` | 1 | Synthetic macOS/Linux CI and Linux systemd smoke |
 | `Observer.command` | 1 | Optional CLI menu launcher, currently included in the source contract |
-| The 13 `.md` files listed under `docs/` | 13 | Operation, design, maintenance and publication documentation |
+| The 14 `.md` files listed under `docs/` | 14 | Operation, design, maintenance and publication documentation |
 | `examples/instance-settings.json` | 1 | Empty stdio settings without real grants or secrets |
-| `scripts/build_fixtures.py`, `scripts/check_release.py`, `scripts/check_repository.py`, `scripts/l1_probe.py`, `scripts/test_suite.py`, `scripts/systemd_smoke.py` | 6 | Synthetic fixture, protocol and packaging verification helpers |
-| The 25 `.py` files listed under `src/observer/` | 25 | Runtime implementation; exact names are in the inventory |
+| `scripts/build_fixtures.py`, `scripts/check_release.py`, `scripts/check_repository.py`, `scripts/l1_probe.py`, `scripts/test_suite.py`, `scripts/systemd_smoke.py`, `scripts/install_linux_node.sh`, `scripts/upgrade_linux_node.sh`, `scripts/linux_node.py`, `scripts/linux_wizard_smoke.py` | 10 | Linux deployment/recovery and synthetic fixture, protocol, systemd and packaging verification helpers |
+| The 26 `.py` files listed under `src/observer/` | 26 | Runtime implementation; exact names are in the inventory |
 | `src/observer/resources/settings.schema.json` and the 3 files under `src/observer/resources/licenses/` | 4 | Public schema and preserved dependency notices |
-| The 17 `.py` files listed under `tests/` | 17 | Synthetic regression tests and support code |
+| The 18 `.py` files listed under `tests/` | 18 | Synthetic regression tests and support code |
 
 The root `LICENSE` and `THIRD_PARTY_NOTICES.md` are included in package license metadata and both distribution archives. Preserve the three dependency license/NOTICE resources as well. When adding or renaming public files, update `PUBLIC_FILES.txt`, `.gitignore`, `MANIFEST.in` and the applicable filename allowlists in `scripts/check_release.py` together. Any license changes also require matching `pyproject.toml` metadata and freshly verified artifacts; inventory changes alone are insufficient.
 

@@ -14,6 +14,7 @@ docs/config-reference.md
 docs/deployment.md
 docs/deployment.zh-CN.md
 docs/implementation-audit.md
+docs/linux-wizard-audit.md
 docs/migration.md
 docs/product-design.md
 docs/product-manual.md
@@ -30,9 +31,13 @@ requirements.lock
 scripts/build_fixtures.py
 scripts/check_release.py
 scripts/check_repository.py
+scripts/install_linux_node.sh
 scripts/l1_probe.py
+scripts/linux_node.py
+scripts/linux_wizard_smoke.py
 scripts/systemd_smoke.py
 scripts/test_suite.py
+scripts/upgrade_linux_node.sh
 src/observer/__init__.py
 src/observer/cli.py
 src/observer/config.py
@@ -44,6 +49,7 @@ src/observer/linux_commands.py
 src/observer/linux_credentials.py
 src/observer/linux_fs.py
 src/observer/linux_git.py
+src/observer/linux_keyclaims.py
 src/observer/linux_legacy.py
 src/observer/linux_runtime.py
 src/observer/linux_systemd.py
@@ -68,6 +74,7 @@ tests/test_filesystem.py
 tests/test_git_evidence.py
 tests/test_independent_redaction_budget.py
 tests/test_linux.py
+tests/test_linux_wizard.py
 tests/test_mcp_wire.py
 tests/test_next_phase.py
 tests/test_platform_compat.py

@@ -53,6 +53,8 @@ def parser():
     credentials.add_argument("action", choices=("info", "set"))
     credentials.add_argument("--approve", action="store_true")
     credentials.add_argument("--kind", choices=("runtime", "proxy"), default="runtime", help="Linux credential slot")
+    credentials.add_argument("--unique-node-key", action="store_true", help="Linux: reject host-local key reuse by another instance")
+    credentials.add_argument("--key-registry", help="Linux: private host-local key claim registry; contains no key values")
     linux_credentials = commands.add_parser("credential-delete", help="Linux: remove a local staged credential; no remote revocation")
     linux_credentials.add_argument("--kind", choices=("runtime", "proxy"), default="runtime")
     linux_credentials.add_argument("--approve", action="store_true")
@@ -316,7 +318,7 @@ def run(args):
         if sys.platform.startswith("linux"):
             from .linux_commands import credentials
             return credentials(store, args, confirmation(args))
-        if args.kind != "runtime":
+        if args.kind != "runtime" or args.unique_node_key or args.key_registry:
             raise Refusal("linux_only_credential_kind; macos_keychain_unchanged")
         keychain = store.keychain()
         meta = {"service": keychain.service.decode(), "account": keychain.account.decode(),

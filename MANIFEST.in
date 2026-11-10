@@ -15,6 +15,7 @@ include docs/config-reference.md
 include docs/deployment.md
 include docs/deployment.zh-CN.md
 include docs/implementation-audit.md
+include docs/linux-wizard-audit.md
 include docs/migration.md
 include docs/product-design.md
 include docs/product-manual.md
@@ -31,9 +32,13 @@ include requirements.lock
 include scripts/build_fixtures.py
 include scripts/check_release.py
 include scripts/check_repository.py
+include scripts/install_linux_node.sh
 include scripts/l1_probe.py
+include scripts/linux_node.py
+include scripts/linux_wizard_smoke.py
 include scripts/systemd_smoke.py
 include scripts/test_suite.py
+include scripts/upgrade_linux_node.sh
 include src/observer/__init__.py
 include src/observer/cli.py
 include src/observer/config.py
@@ -45,6 +50,7 @@ include src/observer/linux_commands.py
 include src/observer/linux_credentials.py
 include src/observer/linux_fs.py
 include src/observer/linux_git.py
+include src/observer/linux_keyclaims.py
 include src/observer/linux_legacy.py
 include src/observer/linux_runtime.py
 include src/observer/linux_systemd.py
@@ -69,6 +75,7 @@ include tests/test_filesystem.py
 include tests/test_git_evidence.py
 include tests/test_independent_redaction_budget.py
 include tests/test_linux.py
+include tests/test_linux_wizard.py
 include tests/test_mcp_wire.py
 include tests/test_next_phase.py
 include tests/test_platform_compat.py

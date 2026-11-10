@@ -1,8 +1,80 @@
 # Independent macOS and Linux nodes
 
+## Terminal wizard SOP
+
+The recommended Linux entry is `sudo bash scripts/install_linux_node.sh` from a reviewed checkout containing the scripts. Existing Mac defaults and Keychain workflow are unchanged. Manual deployment below remains a recovery/reference route; it is not a prerequisite for using the wizard.
+
+### Prepare and install
+
+Have root/sudo, Bash, Python3.14+ with venv/ensurepip, system Git2.28+ at `/usr/bin/git`, active systemd219+, 1 GiB free per candidate, trusted dependency access (or a complete offline wheelhouse), and an already verified official Tunnel Client. The scripts do not install/upgrade these host components. Ubuntu/CentOS are supported when these actual prerequisites hold; an old stock distro alone is not evidence of compatibility.
+
+```bash
+git clone https://github.com/liuhuijiayou/readonly-observer.git
+cd readonly-observer
+sudo bash scripts/install_linux_node.sh
+```
+
+The wizard collects all non-secret configuration and previews the plan before changes: public Node Name; a new Installation Directory; a new independent Instance Home; exact project path/alias; optional exact persistent Codex JSONL/alias; Tunnel Display Name; **explicit per-node Tunnel ID with no reused default**; detected Client path for confirmation or an absolute replacement; proxy enabled flag; and unique systemd Unit Name. The display name is a local label, not a Platform rename action. Runtime Key and Proxy URL are collected later only by Observer's hidden-TTY `credentials set --approve` and `credentials set --kind proxy --approve`. The shell and deployment controller never receive these values.
+
+Approve the resolved commit/public snapshot fingerprint before trusted code is built as root. Local HEAD can use the current public-file snapshot, shown by its SHA256 and requiring approval; `--ref COMMIT_OR_TAG` normally exports committed bytes. Missing refs clone only the official public Observer repository into a private temporary cache; no checkout is reset or cleaned. Project/session grant previews then require their own literal `approve`. Session metadata mapping can require a second confirmation. Refusal stops immediately. Unit contents are displayed only after the local 13-tool probe and systemd verification pass; approve the precise writable paths. Finally type `start` to start and enable at boot, or leave blank to keep it stopped and disabled.
+
+Defaults put installation code in `/opt/readonly-observer-nodes/<node>` and the home in `/var/lib/readonly-observer/<node>`. They must be separate, root-controlled and outside observed projects. Installation/home paths use simple ASCII absolute paths for old systemd compatibility; data project/session paths can contain spaces and are passed as literal argv. Symlinks, broad/unsafe roots, overlapping paths and existing homes/units are rejected. The installed Python venv is created at its permanent versioned path and never moved. No inbound port, firewall, user-account or Platform permission changes occur.
+
+### Preview, metadata flags and offline use
+
+```bash
+sudo bash scripts/install_linux_node.sh --help
+sudo bash scripts/install_linux_node.sh --dry-run
+sudo bash scripts/install_linux_node.sh --no-start
+sudo bash scripts/install_linux_node.sh --ref REVIEWED_COMMIT_OR_TAG
+sudo bash scripts/install_linux_node.sh --python /absolute/python3.14 --wheelhouse /absolute/trusted/wheels
+```
+
+`--dry-run` prompts for missing non-secret metadata, previews it, and does not read credentials, build a venv, create targets or change/start units. For a headless dry-run, supply all required non-secret fields with `--name`, `--install-dir`, `--home`, `--project`, `--alias`, `--tunnel-name`, `--tunnel-id`, `--client`, `--proxy on|off`, `--unit`, and optional `--session/--session-alias`. `--source` chooses an already reviewed local Git checkout; `--local-reviewed` explicitly selects its public working-tree snapshot. There is no secret argument, environment/stdin key fallback, `--yes` or unattended approval mode. Real installation requires `/dev/tty` even when metadata is prefilled.
+
+SSH-shell HTTP_PROXY/HTTPS_PROXY/ALL_PROXY values are not inherited by Git, pip, Observer or Client. Use direct approved public package connectivity or `--wheelhouse` plus a local `--source` containing the desired ref. The wheelhouse must contain the pinned build and runtime dependencies; it is trusted executable input. A partial wheelhouse fails closed instead of falling back to an unaudited installer. No Tunnel Client is downloaded or executed for detection; the operator is responsible for its provenance.
+
+### Independent credentials and partial-install recovery
+
+Issue a new independent Platform Tunnel and Restricted Runtime Key for each simultaneously online node. Confirm `independent-key` before entering the key. An optional Linux guard inside the existing hidden CLI rejects a key fingerprint already registered to another home on the same host. Root-only claims under `/var/lib/readonly-observer-deployments/` store one-way fingerprints/ownership, never key values. Tunnel claims similarly detect managed-host reuse. Cross-machine uniqueness cannot be proven offline: independently issue the key in Platform and explicitly attest it. Root can bypass local controls; no central Observer or cross-host registry is introduced.
+
+On Ctrl+C or failure, temporary metadata/build/cache resources created by that operation are cleaned, while the owned journal, completed approvals and secure credential sources remain for recovery. Existing instances are never deleted. Resume only the exact original owned plan:
+
+```bash
+sudo bash scripts/install_linux_node.sh --resume --install-dir /absolute/original/installation
+```
+
+Existing credential slots require an explicit `keep` or `rotate`, with no default overwrite. Keeping a runtime key checks only the saved ownership note and source metadata, not its value; a changed/unclaimed slot requires explicit rotation through Observer. Resume reconciles matching grants and does not register them again. Unknown/foreign homes or units, changed plans and altered managed files refuse takeover. A complete installation uses upgrade, not reinitialization. A still-running incomplete owned service requires explicit approval to stop before resume. Keep the single-unit-per-home rule.
+
+### Upgrade and rollback
+
+Installer-managed homes contain private deployment metadata linking their exact unit and retained release. Hand-installed instances without this metadata are refused; use the manual recovery procedure rather than silently adopting them.
+
+```bash
+sudo bash scripts/upgrade_linux_node.sh --home /var/lib/readonly-observer/linux2 --ref REVIEWED_COMMIT_OR_TAG
+sudo bash scripts/upgrade_linux_node.sh --home /var/lib/readonly-observer/linux2 --ref REVIEWED_COMMIT_OR_TAG --dry-run
+sudo bash scripts/upgrade_linux_node.sh --home /var/lib/readonly-observer/linux2 --ref REVIEWED_COMMIT_OR_TAG --no-start
+sudo bash scripts/upgrade_linux_node.sh --home /var/lib/readonly-observer/linux2 --rollback
+```
+
+A full commit SHA or exact tag is required for upgrade; mutable branch shortcuts are not accepted. Verify the current manifest, node identity, exact unit hash/origin and absence of drop-ins before stopping anything. Approve stop/update, then back up only known configuration, the old unit and state **metadata**. Credential files are never opened or backed up. Build a new release/venv, validate existing grants and local MCP, generate/verify the new unit, review and approve it, atomically replace only the unchanged managed unit, and explicitly confirm `start` for the final acceptance probe. Instance home, node identity, source grants, Tunnel and credentials are preserved; no reapproval or key entry occurs.
+
+Old releases remain at their original absolute paths. A build/start/acceptance failure restores the previous unit/version and its previously running state when approved, unless `--no-start` was requested. A refusal or Ctrl+C restores files but leaves the service stopped. Backup `RESTORE.txt` and `upgrade-state.json` describe recovery. A power loss/SIGKILL can be recovered explicitly:
+
+```bash
+sudo bash scripts/upgrade_linux_node.sh --home /var/lib/readonly-observer/linux2 --resume --no-start
+```
+
+This recovers the recorded prior version; retry the desired ref afterward. Unknown external unit edits are never overwritten, even during recovery. Failed recovery can require manual inspection; the old unit backup and venv are retained. Do not copy stale inode-based approvals or credentials from backups. Upgrades preserve prior boot enablement; `--no-start` leaves the service stopped now, without changing that prior enablement. Retained releases/backups consume disk; there is no automatic destructive pruning.
+
+### ChatGPT and evidence
+
+After installation, output includes Node Name, local Tunnel Display Name, Tunnel ID, unit and source revision. Create each ChatGPT MCP connection manually, select that node's existing Tunnel, and verify observer_info.node, 13 read-only tools and an approved harmless marker. No remote-ready claim is inferred from local tests. Systemd219–246 staging and 247+ LoadCredential use the existing backend selector. Root-only plaintext persistent sources, tmpfs swap and same-UID/root limits still apply. See the [wizard test audit](linux-wizard-audit.md), [219 security differences](systemd219.en.md), and manual recovery steps below.
+
+
 The same repository supplies the same 13 read-only MCP tools on both platforms. Each machine reads its own explicitly approved sources. There is no central Observer, shared file server, or remote authorization command. Use one private instance home, one independent Tunnel ID and one independently issued runtime key per simultaneously running node. A second instance on the same machine uses another `--home`.
 
-This change adds Linux adapters. Existing macOS settings v1, default paths, approval records, Keychain service/account, manager, MCP server and Tunnel launch behavior remain in place. An existing Mac needs no reinitialization, new grants, credential migration, or reinstall to keep using its current deployment. This development branch has not been published. See [中文部署说明](deployment.zh-CN.md) and [verification audit](implementation-audit.md).
+This change adds Linux adapters. Existing macOS settings v1, default paths, approval records, Keychain service/account, manager, MCP server and Tunnel launch behavior remain in place. An existing Mac needs no reinitialization, new grants, credential migration, or reinstall to keep using its current deployment. Publication status must be checked against the actual reviewed Git revision; local commits do not prove a remote push. See [中文部署说明](deployment.zh-CN.md) and [verification audit](implementation-audit.md).
 
 Systemd 219–246 uses a restricted RuntimeDirectory staging backend; see the [version-specific deployment and security differences](systemd219.en.md). This supersedes the former 247+ minimum. The Manager Provider never falls back to source files.
 
@@ -176,4 +248,4 @@ python3.14 -m venv .venv-test
 .venv-test/bin/python -I scripts/check_repository.py
 ```
 
-`--git /absolute/isolated/git` on `scripts/test_suite.py` selects a modern Git **only within the test process**, for hosts with an obsolete system Git. Production continues using the existing trusted `/usr/bin/git`. Upgrade the server's Git through approved administration before using production Git tools. CI covers Ubuntu 22.04 and macOS 14 with Python 3.14; the Linux CI also runs `scripts/systemd_smoke.py` as root using synthetic `LoadCredential` material and a fake client. That script installs/removes only its uniquely named ephemeral test unit; never run it as a substitute for production acceptance. No real keys, sessions, tunnels or remote calls are used. Consult the audit for actual local results and pending platform/remote acceptance.
+`--git /absolute/isolated/git` on `scripts/test_suite.py` selects a modern Git **only within the test process**, for hosts with an obsolete system Git. Production continues using the existing trusted `/usr/bin/git`. Upgrade the server's Git through approved administration before using production Git tools. The supplied CI targets Ubuntu 22.04 and macOS 14 with Python 3.14; hosted execution is pending. Linux CI additionally runs root-only wizard/hidden-TTY tests, `scripts/linux_wizard_smoke.py` install/upgrade/rollback, and `scripts/systemd_smoke.py` credential lifecycle checks. Smoke scripts use the actual Manager's backend, synthetic credential material and a fake client, and install/remove only uniquely named ephemeral test units. No real keys, sessions, tunnels or remote calls are used. Consult the wizard audit for actual local results and pending platform/remote acceptance.

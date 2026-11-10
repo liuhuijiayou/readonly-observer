@@ -25,6 +25,12 @@ jobs:
       - name: Root-only legacy staging regressions
         if: runner.os == 'Linux'
         run: sudo "$(command -v python)" -I scripts/test_suite.py --pattern test_systemd219.py
+      - name: Root wizard transactions and hidden TTY input
+        if: runner.os == 'Linux'
+        run: sudo "$(command -v python)" -I scripts/test_suite.py --pattern test_linux_wizard.py
+      - name: Actual systemd wizard install upgrade and rollback
+        if: runner.os == 'Linux'
+        run: sudo "$(command -v python)" -I scripts/linux_wizard_smoke.py
       - name: Real systemd Credentials with a synthetic client
         if: runner.os == 'Linux'
         run: sudo "$(command -v python)" -I scripts/systemd_smoke.py

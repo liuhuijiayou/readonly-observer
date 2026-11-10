@@ -2,11 +2,11 @@
 
 Subsequent systemd 219 implementation and actual integration evidence are recorded in the [separate audit](systemd219-audit.md); the earlier 247+ limitation below is historical.
 
-This development branch adds Linux support while preserving the stable Mac implementation. It has not been committed, pushed or published. See [English deployment](deployment.md) and [中文部署](deployment.zh-CN.md) for the architecture, complete new-machine procedure, identity, isolation, proxy, root boundary, rotation, replacement and four-layer revocation runbooks.
+This is the historical implementation acceptance record. The Linux changes were subsequently committed locally as f72cb45 on main; the attempted remote push was blocked by authentication, so this report does not assert remote publication. The later interactive wizard work is a separate uncommitted change awaiting review; see the [wizard audit](linux-wizard-audit.md). See [English deployment](deployment.md) and [中文部署](deployment.zh-CN.md) for the architecture, complete new-machine procedure, identity, isolation, proxy, root boundary, rotation, replacement and four-layer revocation runbooks.
 
 ## Evidence boundaries
 
-The workspace began clean on `main` at `18e3a4f`. Work is isolated on `linux-platform-adapter`. No pre-existing modifications were overwritten. The initial additions to shared Keychain/Store code were removed before final implementation; `credentials.py`, `profile.py`, `runtime.py`, `server.py`, settings schema and existing example settings match the starting revision. Mac default behavior and Keychain service/account derivation are covered by synthetic compatibility tests. No Mac was contacted or modified.
+The workspace began clean on `main` at `18e3a4f`. The original work was isolated on `linux-platform-adapter`; it was subsequently fast-forwarded into local main. No pre-existing modifications were overwritten. The initial additions to shared Keychain/Store code were removed before final implementation; `credentials.py`, `profile.py`, `runtime.py`, `server.py`, settings schema and existing example settings match the starting revision. Mac default behavior and Keychain service/account derivation are covered by synthetic compatibility tests. No Mac was contacted or modified.
 
 The provided environment description said Ubuntu 22.04/systemd249. Actual read-only inspection showed **CentOS 7 userspace, systemd219, Git1.8.3.1, root and CPython3.14.10**. Therefore this report does not claim native Ubuntu22.04/systemd249 execution. A temporary modern Git2.47.3 was built under `/tmp` from the official Git source; the synthetic test runner selects it only within its test process. Production Git selection remains `/usr/bin/git`. No system Git, user, firewall or cloud security group was modified.
 
@@ -62,7 +62,7 @@ Migration tests preserve the selected public identity and configured Tunnel ID w
 
 Structured source review covered **40 distinct Python files**: 24 runtime modules, 6 scripts and 10 test/support files (targeted excerpts included; this is not a claim of line-by-line review of all repository code). Nine official technical documents/source files were read as listed above; build-package metadata/downloads are not counted as documentation. The regression suite exercises the other existing tests as well.
 
-There are **37 changed/new public files: 21 modified and 16 new**, with **26 new unittest cases** (19 Linux, 6 Mac compatibility, 1 opt-in systemd smoke). No commit or push was made. Untracked private build environments/artifacts remain excluded by the reviewed manifest. Existing real Observer homes and source authorizations were not overwritten.
+There are **37 changed/new public files: 21 modified and 16 new**, with **26 new unittest cases** (19 Linux, 6 Mac compatibility, 1 opt-in systemd smoke). At that original acceptance checkpoint no commit or push had been made; see the later status note above. Untracked private build environments/artifacts remain excluded by the reviewed manifest. Existing real Observer homes and source authorizations were not overwritten.
 
 ## Complete changed-file inventory
 

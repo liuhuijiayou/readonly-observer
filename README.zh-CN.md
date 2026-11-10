@@ -4,7 +4,27 @@
 
 让 MCP 客户端依据证据，只读访问你在本机明确批准的项目和单个 Codex 会话。
 
-**0.1.0 · Alpha / 实验阶段。** 公开版本从 0.1.0 开始；Linux 适配位于 `linux-platform-adapter` 开发分支；实际测试与待验收项见[工作审计](docs/implementation-audit.md)。没有发布新版本。
+**0.1.0 · Alpha / 实验阶段。** 公开版本从 0.1.0 开始；同一代码支持 macOS 与独立 Linux 节点。Linux 推荐使用下方交互向导，测试证据见[向导审计](docs/linux-wizard-audit.md)。请使用包含脚本的已审核版本；本轮向导改造尚未提交或推送，等待人工审核。
+
+## Linux 推荐入口：交互式安装与升级
+
+前置条件：root/sudo、Bash、Python **3.14+**（含 venv/ensurepip）、`/usr/bin/git` **2.28+**、正在运行的 systemd **219+**、至少 1 GiB 空间，以及已安装并由操作者核验的官方 Tunnel Client。向导会检查这些条件，不自动升级系统/systemd，不下载 Tunnel 可执行文件。
+
+```bash
+git clone https://github.com/liuhuijiayou/readonly-observer.git
+cd readonly-observer
+sudo bash scripts/install_linux_node.sh
+```
+
+逐项提示 Node Name、安装目录、独立 home、项目路径/alias、可选精确 JSONL/alias、Tunnel 显示名、必须明确输入的 Tunnel ID、自动探测后确认的客户端路径、隐藏 Runtime Key、代理选择及隐藏 URL、unit 名和是否启动。无需编辑 Shell、JSON 或环境变量。项目/会话分别输入 `approve`；密钥仅交给 Observer 的现有隐藏 TTY CLI。Platform 资源和 ChatGPT 连接仍由你手动创建。
+
+```bash
+sudo bash scripts/install_linux_node.sh --dry-run
+sudo bash scripts/install_linux_node.sh --no-start
+sudo bash scripts/upgrade_linux_node.sh --home /var/lib/readonly-observer/linux2 --ref REVIEWED_COMMIT_OR_TAG
+```
+
+参数只能预填非秘密配置，实际授权和密钥输入仍要求人工 TTY。已有 home/unit 会拒绝覆盖；中断后可显式 `--resume --install-dir ...`，升级保留旧 release/venv 并支持回滚。完整步骤见[安装、升级与恢复 SOP](docs/deployment.zh-CN.md#终端向导-sop)。原有 Mac 操作保持不变；手动 Linux 流程保留作故障恢复。
 
 ## 功能
 
@@ -26,7 +46,7 @@
 
 ### 1. 从源码安装
 
-需要 **macOS 或 Linux、带 `venv`/`pip` 的 Python 3.14+，以及支持 stdio 的本地 MCP 客户端**。Git/联合证据需要 Git 2.28+，普通读取不需要。Linux Tunnel 支持 systemd 219+（旧版受限 tmpfs 暂存，247+ 原生 LoadCredential），见[完整部署指南](docs/deployment.zh-CN.md)。既有 Mac 的 Keychain、v1 配置与生命周期实现保留，无需操作当前稳定实例。Windows 不支持。本分支真实 macOS 与远端接入仍待验收，见[工作审计](docs/implementation-audit.md)。
+需要 **macOS 或 Linux、带 `venv`/`pip` 的 Python 3.14+，以及支持 stdio 的本地 MCP 客户端**。Git/联合证据需要 Git 2.28+，普通读取不需要。Linux Tunnel 支持 systemd 219+（旧版受限 tmpfs 暂存，247+ 原生 LoadCredential），见[完整部署指南](docs/deployment.zh-CN.md)。既有 Mac 的 Keychain、v1 配置与生命周期实现保留，无需操作当前稳定实例。Windows 不支持。当前版本真实 macOS 与远端接入仍待验收，见[工作审计](docs/implementation-audit.md)。
 
 从 [v0.1.0 Release](https://github.com/liuhuijiayou/readonly-observer/releases/tag/v0.1.0) 下载并解压源码包，或克隆[源码仓库](https://github.com/liuhuijiayou/readonly-observer)。目前**没有公开的 PyPI 安装方式**。在包含 `pyproject.toml` 的源码目录执行：
 

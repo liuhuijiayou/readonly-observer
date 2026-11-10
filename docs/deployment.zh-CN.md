@@ -1,8 +1,80 @@
 # macOS / Linux 独立节点部署与生命周期
 
+## 终端向导 SOP
+
+Linux 正式推荐入口为包含本次脚本的已审核仓库中的 `sudo bash scripts/install_linux_node.sh`。Mac 的默认配置、Keychain 和原有流程不变；下方手动部署只保留作故障恢复/参考，不要求使用向导前先手工配置。
+
+### 准备与安装
+
+准备 root/sudo、Bash、Python3.14+（含 venv/ensurepip）、位于 `/usr/bin/git` 的 Git2.28+、正在运行的 systemd219+、每个候选版本至少 1 GiB 空间、可信依赖网络或完整离线 wheelhouse，以及已安装并核验的官方 Tunnel Client。脚本检查条件，不自动安装/升级系统组件。Ubuntu/CentOS 只有实际满足条件才属于可部署环境。
+
+```bash
+git clone https://github.com/liuhuijiayou/readonly-observer.git
+cd readonly-observer
+sudo bash scripts/install_linux_node.sh
+```
+
+向导逐项收集并预览：公开 Node Name、新安装目录、新独立 home、项目绝对路径/alias、可选精确持久 JSONL/alias、Tunnel Display Name、**必须明确输入且不借用其他机器默认值的 Tunnel ID**、探测后确认或手工输入的 Client 绝对路径、代理启用状态、唯一 unit 名。显示名只是本地标签，不会修改 Platform。Runtime Key 和 Proxy URL 在后续安全阶段，仅由 Observer 的 `credentials set --approve`、`credentials set --kind proxy --approve` 隐藏 TTY 输入；Bash 和部署控制器都不会接收值。
+
+先审核精确 commit/公开文件快照 SHA256，并输入 `approve`，才会以 root 构建可信 Observer 代码。本地 HEAD 可使用当前公开文件快照，但必须审核其指纹；指定 `--ref COMMIT_OR_TAG` 通常取提交中的字节。不存在的 ref 只会从官方公开 Observer 仓库克隆到私有临时缓存，不 reset/clean 你的 checkout。项目和会话分别由现有 CLI 显示范围并要求 `approve`，准确会话映射可能需要第二次确认。拒绝即停止。通过本地 13 工具 probe 和 systemd verify 后显示 unit，再审核准确写权限。最后输入 `start` 才启动并启用开机自启；留空则保持停止且不启用。
+
+默认安装根为 `/opt/readonly-observer-nodes/<node>`，home 为 `/var/lib/readonly-observer/<node>`。两者必须独立、由 root 控制，不能放进被观察项目。为兼容旧 systemd，安装/home 路径使用简单 ASCII 绝对路径；项目/会话数据路径可包含空格，并以字面 argv 传入。拒绝符号链接、不安全/重叠路径和已有 home/unit。venv 直接创建于最终版本目录，不搬迁。不开公网端口，不改防火墙、用户体系或远端权限。
+
+### 预览、参数及离线部署
+
+```bash
+sudo bash scripts/install_linux_node.sh --help
+sudo bash scripts/install_linux_node.sh --dry-run
+sudo bash scripts/install_linux_node.sh --no-start
+sudo bash scripts/install_linux_node.sh --ref REVIEWED_COMMIT_OR_TAG
+sudo bash scripts/install_linux_node.sh --python /absolute/python3.14 --wheelhouse /absolute/trusted/wheels
+```
+
+`--dry-run` 交互补齐非秘密配置并预览，不读取凭据、不创建目标/venv、不修改或启动服务。无终端的 dry-run 可明确传入全部非秘密字段：`--name`、`--install-dir`、`--home`、`--project`、`--alias`、`--tunnel-name`、`--tunnel-id`、`--client`、`--proxy on|off`、`--unit`，及可选 `--session/--session-alias`。`--source` 选择已有可信本地 Git checkout；`--local-reviewed` 显式选择其公开工作区快照。没有 key/URL 参数、环境变量/管道密钥回退、`--yes` 或无人值守授权开关；真正安装始终需要人工 `/dev/tty`。
+
+Git、pip、Observer 和 Client 不继承 SSH Shell 的 HTTP_PROXY/HTTPS_PROXY/ALL_PROXY。包依赖需可直接访问受控公开源，或使用完整可信 `--wheelhouse`；无网络时同时用 `--source` 指向已取得所需 ref 的本地仓库。wheelhouse 必须包含固定的构建和运行依赖，属于可信可执行输入；缺包即失败，不回退下载未知安装器。Client 只探测文件元数据，不自动下载或运行，其来源由操作者负责核验。
+
+### 独立凭据与中断恢复
+
+每个同时在线节点须在 Platform 独立创建 Tunnel、独立签发 Restricted Runtime Key。输入密钥前明确确认 `independent-key`。Linux 隐藏 CLI 内部增加可选同机复用防护：已登记给另一个 home 的 Runtime Key 指纹将被拒绝。`/var/lib/readonly-observer-deployments/` 的 root-only 登记只保存单向指纹/所有权，不保存 Key 值；Tunnel 登记也阻止受管理节点同机复用。跨机器不能离线证明唯一性，必须独立签发并由人确认；root 可绕过本地防护。本方案不增加中央 Observer 或跨主机注册中心。
+
+Ctrl+C/失败会清理本次临时元数据、未完成构建和 Git 缓存，同时保留自有 journal、已批准授权和安全凭据源以便恢复，不删除已有实例。仅显式恢复原有同一计划：
+
+```bash
+sudo bash scripts/install_linux_node.sh --resume --install-dir /absolute/original/installation
+```
+
+已有凭据必须明确输入 `keep` 或 `rotate`，不会默认覆盖。保留 runtime key 只核对登记记录和源文件元数据，不读取值；文件改变或缺少有效登记时，必须明确通过 Observer 轮换。恢复会核对已有相同授权，不重复注册。未知 home/unit、改变的计划或外部修改的受管文件拒绝接管。完整安装应使用升级；仍在运行的未完成自有安装，恢复前会要求明确同意停止。一个 home 只对应一个 unit。
+
+### 升级、回滚与恢复
+
+向导管理的 home 有私有 deployment 元数据，准确关联 unit 与保留的 release。原有手动部署没有该元数据时会拒绝接管，应走手动恢复流程。
+
+```bash
+sudo bash scripts/upgrade_linux_node.sh --home /var/lib/readonly-observer/linux2 --ref REVIEWED_COMMIT_OR_TAG
+sudo bash scripts/upgrade_linux_node.sh --home /var/lib/readonly-observer/linux2 --ref REVIEWED_COMMIT_OR_TAG --dry-run
+sudo bash scripts/upgrade_linux_node.sh --home /var/lib/readonly-observer/linux2 --ref REVIEWED_COMMIT_OR_TAG --no-start
+sudo bash scripts/upgrade_linux_node.sh --home /var/lib/readonly-observer/linux2 --rollback
+```
+
+升级必须指定完整 commit SHA 或准确 tag，不接受可变分支快捷名。先核对 manifest、节点身份、准确 unit 哈希/来源及无 drop-in，再批准停机。停止对应服务后，仅备份已知配置、原 unit 和运行态**元数据**，不打开或复制凭据。创建新 release/venv，验证原授权与本地 MCP，生成并 verify 新 unit，经人工审核后原子替换未被外部修改的受管 unit，再明确输入 `start` 启动验收。不重建 home、不变更节点身份/Tunnel、不重新授权或输入密钥。
+
+旧 release/venv 保留原绝对路径。构建、启动或验收失败时自动恢复旧 unit/版本，并按已同意的策略恢复原运行状态；`--no-start` 则保持停止。用户拒绝或 Ctrl+C 时恢复文件后保持停止，不再自动启动。备份中的 `RESTORE.txt` 与 `upgrade-state.json` 给出恢复信息。掉电/SIGKILL 中断后可显式恢复：
+
+```bash
+sudo bash scripts/upgrade_linux_node.sh --home /var/lib/readonly-observer/linux2 --resume --no-start
+```
+
+这会恢复记录中的旧版本，之后再重试目标 ref。外部修改的 unit 即使在恢复时也不会覆盖；恢复失败时旧 unit 备份和 venv 仍保留，需本地审阅。不要从备份复制旧 inode 授权或凭据。升级保留原开机启用状态；`--no-start` 只要求当前停止。旧版本/备份占用空间，不自动破坏性清理。
+
+### ChatGPT 与验收边界
+
+完成后输出 Node Name、本地 Tunnel Display Name、Tunnel ID、unit 与源码版本。你仍需在 ChatGPT 中手动建立每个 MCP 连接，选择对应已有 Tunnel，核对 `observer_info.node`、13 个只读工具和授权的公开标记。本地通过不代表远端已接通。219–246 暂存、247+ LoadCredential 使用现有适配，不修改 Mac 实现。root-only 明文源、tmpfs swap、同 UID/root 的风险仍然存在；见[向导测试审计](linux-wizard-audit.md)、[219 安全差异](systemd219.md)及下方手动恢复步骤。
+
+
 同一个仓库、Python **3.14+**、相同的 13 个只读 MCP 工具。每台机器只读取本机明确授权的数据；每个同时在线的实例使用独立 home、Tunnel ID 和独立签发的 Runtime Key。不存在中央 Observer、中央文件服务器或远程授权入口。同机多实例通过不同 `--home` 区分。
 
-本轮重点是 Linux 适配。Mac 原有 `profile.py`、`credentials.py`、`runtime.py`、`server.py` 保持不变，默认目录、settings v1、授权记录、Keychain service/account 和现有 Tunnel 启动路径保留。**现有稳定 Mac 无需重新初始化、重新授权、迁移凭据或重新安装。** 没有连接或操作 Mac，没有发布。当前验证证据见[工作审计](implementation-audit.md)，完整英文说明见 [English deployment](deployment.md)。
+Linux 推荐使用上方终端向导。Mac 原有 `profile.py`、`credentials.py`、`runtime.py`、`server.py` 保持不变，默认目录、settings v1、授权记录、Keychain service/account 和现有 Tunnel 启动路径保留。**现有稳定 Mac 无需重新初始化、重新授权、迁移凭据或重新安装。** 没有连接或操作 Mac，没有发布。当前验证证据见[工作审计](implementation-audit.md)，完整英文说明见 [English deployment](deployment.md)。
 
 systemd 219–246 使用受限 RuntimeDirectory 暂存后端，见[版本专用部署与安全差异](systemd219.md)。这取代原来的 247+ 最低要求；Manager 的 Provider 不回退读取源文件。
 
@@ -162,4 +234,4 @@ python3.14 -m venv .venv-test
 .venv-test/bin/python -I scripts/check_repository.py
 ```
 
-系统 Git 过旧时，`scripts/test_suite.py --git /absolute/isolated/git` 仅为本次测试进程选择现代 Git，不改变生产固定 `/usr/bin/git`。生产使用 Git 工具之前必须由受控系统管理流程升级 Git。CI 配置 Ubuntu 22.04/macOS 14 + Python3.14；Linux 另以 root 运行 `scripts/systemd_smoke.py`，使用合成 LoadCredential 和伪客户端。该脚本只安装/清理唯一命名的临时测试 unit，不连接真实 Tunnel。当前环境的实际通过数、systemd/macOS 限制及待完成的真实远端验收见审计，不把未运行的 CI 写成通过。
+系统 Git 过旧时，`scripts/test_suite.py --git /absolute/isolated/git` 仅为本次测试进程选择现代 Git，不改变生产固定 `/usr/bin/git`。生产使用 Git 工具之前必须由受控系统管理流程升级 Git。CI 配置 Ubuntu 22.04/macOS 14 + Python3.14，尚未执行托管 CI。Linux 另以 root 运行向导/隐藏 TTY 测试、`scripts/linux_wizard_smoke.py` 安装/升级/回滚以及 `scripts/systemd_smoke.py` 凭据生命周期测试。smoke 脚本选择实际 Manager 对应后端，只用合成凭据和伪客户端，只安装/清理唯一命名的临时测试 unit。当前环境的实际通过数、systemd/macOS 限制及待完成的真实远端验收见向导审计，不把未运行的 CI 写成通过。

@@ -13,9 +13,9 @@ import re
 import tarfile
 import zipfile
 
-MODULES = {"__init__", "cli", "config", "credentials", "fs", "gitreader", "profile", "references", "registry", "runtime", "security", "server", "service", "sessions", "workspace", "wrappers", "nodes", "linux", "linux_commands", "linux_credentials", "linux_fs", "linux_git", "linux_runtime", "linux_systemd", "linux_legacy"}
-TESTS = {"support", "test_cursors", "test_filesystem", "test_git_evidence", "test_independent_redaction_budget", "test_mcp_wire", "test_next_phase", "test_product", "test_redaction", "test_sessions", "test_release", "test_scoped_search", "test_session_references", "test_repository", "test_linux", "test_platform_compat", "test_systemd219"}
-DOCS = {"product-design", "product-manual", "config-reference", "migration", "troubleshooting", "release-scope", "repository", "deployment", "deployment.zh-CN", "implementation-audit", "systemd219", "systemd219.en", "systemd219-audit"}
+MODULES = {"__init__", "cli", "config", "credentials", "fs", "gitreader", "profile", "references", "registry", "runtime", "security", "server", "service", "sessions", "workspace", "wrappers", "nodes", "linux", "linux_commands", "linux_credentials", "linux_fs", "linux_git", "linux_runtime", "linux_systemd", "linux_legacy", "linux_keyclaims"}
+TESTS = {"support", "test_cursors", "test_filesystem", "test_git_evidence", "test_independent_redaction_budget", "test_mcp_wire", "test_next_phase", "test_product", "test_redaction", "test_sessions", "test_release", "test_scoped_search", "test_session_references", "test_repository", "test_linux", "test_platform_compat", "test_systemd219", "test_linux_wizard"}
+DOCS = {"product-design", "product-manual", "config-reference", "migration", "troubleshooting", "release-scope", "repository", "deployment", "deployment.zh-CN", "implementation-audit", "systemd219", "systemd219.en", "systemd219-audit", "linux-wizard-audit"}
 TOP = {".gitignore", "PUBLIC_FILES.txt", "LICENSE", "README.md", "README.zh-CN.md", "SECURITY.md", "THIRD_PARTY_NOTICES.md", "Observer.command", "pyproject.toml", "MANIFEST.in", "requirements.lock", "requirements-macos-py314.lock", "dependencies-tested.json", "PKG-INFO", "setup.cfg"}
 RESOURCE = {"observer/resources/settings.schema.json", "observer/resources/licenses/mcp-LICENSE", "observer/resources/licenses/regex-LICENSE.txt", "observer/resources/licenses/regex-NOTICE.txt"}
 DIST_INFO = "local_readonly_observer-0.1.0.dist-info"
@@ -36,7 +36,7 @@ def allowed(name, kind):
     if kind == "sdist":
         if name in TOP or name in {"examples/instance-settings.json", ".github/workflows/ci.yml"}:
             return True
-        if name in {"scripts/build_fixtures.py", "scripts/l1_probe.py", "scripts/check_release.py", "scripts/check_repository.py", "scripts/test_suite.py", "scripts/systemd_smoke.py"}:
+        if name in {"scripts/build_fixtures.py", "scripts/l1_probe.py", "scripts/check_release.py", "scripts/check_repository.py", "scripts/test_suite.py", "scripts/systemd_smoke.py", "scripts/linux_node.py", "scripts/install_linux_node.sh", "scripts/upgrade_linux_node.sh", "scripts/linux_wizard_smoke.py"}:
             return True
         if name.startswith("tests/") and name[6:].endswith(".py") and name[6:-3] in TESTS:
             return True
